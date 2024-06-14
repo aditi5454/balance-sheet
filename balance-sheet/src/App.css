@@ -1,0 +1,10 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+.container {
+  padding: 0 5px;
+}
+.heading {
+  margin: 20px 0px;
+}
