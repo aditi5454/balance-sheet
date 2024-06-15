@@ -1,55 +1,40 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import Table from "./components/table/Table";
-
-type Cell = {
-  Value: string;
-  Attributes: unknown;
-};
-
-export interface Row {
-  Cells: Cell[] | null;
-  RowType: string | null;
-  Rows: Row[] | null;
-  Title: string | null;
-}
-
-export interface SheetData {
-  Fields?: unknown[];
-  ReportDate: "string";
-  ReportID?: "string";
-  ReportName?: "string";
-  ReportTitles: string[];
-  ReportType?: "string";
-  Rows: Row[];
-  UpdatedDateUTC?: "string";
-}
+import Table from "./components/table";
+import { SheetData } from "./common/constants/types";
+import { getBalanceSheetData } from "./common/services/balance-sheet";
 
 function App() {
   const [data, setData] = useState<SheetData>();
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          "https://show-me-money-1.onrender.com/api/balance-sheet"
-        );
-        console.log(response, "response");
-        const data = await response.json();
-        console.log(data, "data");
-        setData(data.Reports[0]);
-      } catch (error) {
+
+  const fetchData = async () => {
+    getBalanceSheetData()
+      .then((result) => {
+        if (result.Reports?.length > 0) {
+          setData(result.Reports[0]);
+        }
+      })
+      .catch((error) => {
         console.log("Error", error);
-      }
-    };
+      });
+  };
+
+  useEffect(() => {
     fetchData();
   }, []);
 
+  if (!data) {
+    return null;
+  }
+
+  const { ReportTitles: reportTitles = [], Rows: rows = [] } = data;
+
   return (
     <div className="container">
-      <h1 className="heading">{data?.ReportID}</h1>
-      <h2 className="heading">{data?.ReportTitles[1]}</h2>
-      <h3 className="heading">{data?.ReportDate}</h3>
-      <Table data={data?.Rows ?? []} />
+      {reportTitles.map((reportTitle) => {
+        return <h2 className="heading">{reportTitle}</h2>;
+      })}
+      <Table data={rows ?? []} />
     </div>
   );
 }
