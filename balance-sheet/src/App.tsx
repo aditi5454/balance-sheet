@@ -31,9 +31,11 @@ function App() {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "https://run.mocky.io/v3/96e42f82-e75c-4a2f-96f0-3705392209bc"
+          "https://show-me-money-1.onrender.com/api/balance-sheet"
         );
+        console.log(response, "response");
         const data = await response.json();
+        console.log(data, "data");
         setData(data.Reports[0]);
       } catch (error) {
         console.log("Error", error);
